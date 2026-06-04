@@ -1,0 +1,44 @@
+{
+  "language": "fr",
+  "language_name_fr": "Français",
+  "folders_n1": {
+    "01": "01_Informations générales",
+    "02": "02_Finance",
+    "03": "03_Légal",
+    "04": "04_Fiscal",
+    "05": "05_IT",
+    "06": "06_Immobilier",
+    "07": "07_Assurances",
+    "08": "08_RH",
+    "09": "09_Opérations",
+    "10": "10_Processus",
+    "11": "11_Document à trier"
+  },
+  "archives": {
+    "duplicates": "_98_Doublons exacts",
+    "versions": "_99_Versions anciennes"
+  },
+  "excel_headers": {
+    "number": "#",
+    "original_name": "Nom original",
+    "source_path": "Chemin source",
+    "new_name": "Nouveau nom",
+    "folder_n1": "Dossier N1",
+    "folder_n2": "Sous-dossier N2",
+    "confidence": "Confiance",
+    "dedup_status": "Statut dedup",
+    "final_path": "Chemin final",
+    "theme": "Thème",
+    "action": "Action"
+  },
+  "dedup_labels": {
+    "UNIQUE": "Unique",
+    "DOUBLON_EXACT": "Doublon exact",
+    "VERSION_OBSOLETE": "Version obsolète"
+  },
+  "confidence_labels": {
+    "HIGH": "Élevée",
+    "MEDIUM": "Moyenne",
+    "LOW": "Faible"
+  }
+}

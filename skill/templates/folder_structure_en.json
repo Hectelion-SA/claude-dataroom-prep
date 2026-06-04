@@ -1,0 +1,44 @@
+{
+  "language": "en",
+  "language_name_fr": "Anglais",
+  "folders_n1": {
+    "01": "01_General Information",
+    "02": "02_Finance",
+    "03": "03_Legal",
+    "04": "04_Tax",
+    "05": "05_IT",
+    "06": "06_Real Estate",
+    "07": "07_Insurance",
+    "08": "08_HR",
+    "09": "09_Operations",
+    "10": "10_Processes",
+    "11": "11_To Sort"
+  },
+  "archives": {
+    "duplicates": "_98_Exact Duplicates",
+    "versions": "_99_Old Versions"
+  },
+  "excel_headers": {
+    "number": "#",
+    "original_name": "Original Name",
+    "source_path": "Source Path",
+    "new_name": "Renamed File",
+    "folder_n1": "Folder L1",
+    "folder_n2": "Sub-folder L2",
+    "confidence": "Confidence",
+    "dedup_status": "Dedup Status",
+    "final_path": "Final Path",
+    "theme": "Theme",
+    "action": "Action"
+  },
+  "dedup_labels": {
+    "UNIQUE": "Unique",
+    "DOUBLON_EXACT": "Exact Duplicate",
+    "VERSION_OBSOLETE": "Obsolete Version"
+  },
+  "confidence_labels": {
+    "HIGH": "High",
+    "MEDIUM": "Medium",
+    "LOW": "Low"
+  }
+}

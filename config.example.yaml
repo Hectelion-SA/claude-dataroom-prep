@@ -1,0 +1,85 @@
+# ============================================================
+# Dataroom Prep — Configuration
+# ============================================================
+# Copy this file to config.yaml and edit values to match your setup.
+# config.yaml is gitignored — your local paths and branding stay private.
+# ============================================================
+
+# --- OUTPUT --------------------------------------------------
+output:
+  # Default folder where the structured dataroom is created.
+  # The skill always asks for a path interactively — this is the suggested default.
+  default_folder: "C:\\Users\\you\\Documents\\Datarooms"
+
+  # Folder structure language (used for N1/N2 names)
+  # Supported: fr / en / de / it / es
+  default_folder_language: "en"
+
+  # Excel mapping language
+  default_excel_language: "en"
+
+  # Build the final .zip alongside the folder (true/false)
+  make_zip: true
+
+# --- RENAMING ------------------------------------------------
+renaming:
+  # File rename pattern. Placeholders:
+  #   {project} = project name (asked at runtime)
+  #   {theme}   = N2 sub-folder theme (e.g. "NDA", "Annual Financial Statements")
+  #   {subject} = short subject extracted from original filename
+  #   {date}    = YYYYMM extracted from filename or content (or "undated")
+  pattern: "{project} - {theme} - {subject} - {date}"
+
+# --- PHASE 2 — CONTEXTUAL CHECKLIST --------------------------
+checklist:
+  # Auto-trigger Phase 2 (true) or always ask the user (false)
+  auto_run: false
+
+  # Default location used when the user doesn't specify
+  default_location: "France"
+
+  # Default sector — leave empty to detect from website scraping
+  default_sector: ""
+
+  # External legal/fiscal data sources to consult (V2 — implemented as research prompts)
+  data_sources:
+    - "data.gouv.fr"        # French public datasets
+    # - "legifrance"         # French laws (V2)
+    # - "fedlex"             # Swiss federal law (V2)
+    # - "openlaw"            # Open jurisprudence (V2)
+
+# --- BRANDING (Excel cover + tables) -------------------------
+# Customize the Excel mapping and checklist for your own firm.
+# Default values reflect Hectelion SA — change them or leave as-is.
+brand:
+  firm_name: "Hectelion SA"
+  firm_tagline: "Independent M&A advisory"
+  # Hex colors without the '#' prefix
+  primary_color: "182E4E"          # main navy — title bars, headers
+  secondary_color: "0E2841"        # darker navy — subtitles
+  accent_pale: "DCEAF7"
+  accent_green: "6FCF9A"            # status "Present"
+  accent_orange: "FFC000"           # status "Partial" / criticality HIGH
+  accent_grey: "F2F2F2"
+  accent_input_cyan: "72C7E7"       # input cells (databook convention)
+  alert_red: "C00000"               # criticality CRITICAL
+  border_grey: "D9D9D9"
+  font_family: "Cardo"              # falls back gracefully if not installed
+  logo_path: ""                     # optional absolute path
+
+# --- EXTRACTION ----------------------------------------------
+extraction:
+  # Max characters extracted per document for classification heuristics
+  max_chars_per_doc: 2500
+
+  # File extensions considered as DD documents
+  accepted_extensions: [".pdf", ".docx", ".xlsx", ".xlsm", ".doc", ".xls", ".pptx", ".ppt", ".msg", ".rtf", ".txt"]
+
+  # Folder/path substrings to exclude (case-insensitive)
+  # Common patterns to skip: build artifacts, code, system folders
+  exclude_substrings:
+    - "node_modules"
+    - "linux-unpacked"
+    - "/temp/"
+    - ".git/"
+    - "$recycle.bin"

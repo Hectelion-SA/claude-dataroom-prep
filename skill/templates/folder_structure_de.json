@@ -1,0 +1,44 @@
+{
+  "language": "de",
+  "language_name_fr": "Allemand",
+  "folders_n1": {
+    "01": "01_Allgemeine Informationen",
+    "02": "02_Finanzen",
+    "03": "03_Recht",
+    "04": "04_Steuern",
+    "05": "05_IT",
+    "06": "06_Immobilien",
+    "07": "07_Versicherungen",
+    "08": "08_Personal",
+    "09": "09_Betrieb",
+    "10": "10_Prozesse",
+    "11": "11_Zu sortieren"
+  },
+  "archives": {
+    "duplicates": "_98_Exakte Duplikate",
+    "versions": "_99_Alte Versionen"
+  },
+  "excel_headers": {
+    "number": "Nr.",
+    "original_name": "Originalname",
+    "source_path": "Quellpfad",
+    "new_name": "Umbenannte Datei",
+    "folder_n1": "Ordner E1",
+    "folder_n2": "Unterordner E2",
+    "confidence": "Vertrauen",
+    "dedup_status": "Dedup-Status",
+    "final_path": "Endgültiger Pfad",
+    "theme": "Thema",
+    "action": "Aktion"
+  },
+  "dedup_labels": {
+    "UNIQUE": "Einzigartig",
+    "DOUBLON_EXACT": "Exaktes Duplikat",
+    "VERSION_OBSOLETE": "Veraltete Version"
+  },
+  "confidence_labels": {
+    "HIGH": "Hoch",
+    "MEDIUM": "Mittel",
+    "LOW": "Niedrig"
+  }
+}

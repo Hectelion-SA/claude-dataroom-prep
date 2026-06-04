@@ -1,0 +1,30 @@
+# User configuration (private — local paths and branding)
+config.yaml
+
+# Generated datarooms (often confidential client data)
+output/
+extracted.json
+*.xlsx
+!skill/templates/*.xlsx
+
+# Logs
+logs/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

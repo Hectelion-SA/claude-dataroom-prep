@@ -1,0 +1,44 @@
+{
+  "language": "es",
+  "language_name_fr": "Espagnol",
+  "folders_n1": {
+    "01": "01_Información general",
+    "02": "02_Finanzas",
+    "03": "03_Legal",
+    "04": "04_Fiscal",
+    "05": "05_IT",
+    "06": "06_Inmuebles",
+    "07": "07_Seguros",
+    "08": "08_RRHH",
+    "09": "09_Operaciones",
+    "10": "10_Procesos",
+    "11": "11_Por clasificar"
+  },
+  "archives": {
+    "duplicates": "_98_Duplicados exactos",
+    "versions": "_99_Versiones anteriores"
+  },
+  "excel_headers": {
+    "number": "#",
+    "original_name": "Nombre original",
+    "source_path": "Ruta origen",
+    "new_name": "Archivo renombrado",
+    "folder_n1": "Carpeta N1",
+    "folder_n2": "Sub-carpeta N2",
+    "confidence": "Confianza",
+    "dedup_status": "Estado dedup",
+    "final_path": "Ruta final",
+    "theme": "Tema",
+    "action": "Acción"
+  },
+  "dedup_labels": {
+    "UNIQUE": "Único",
+    "DOUBLON_EXACT": "Duplicado exacto",
+    "VERSION_OBSOLETE": "Versión obsoleta"
+  },
+  "confidence_labels": {
+    "HIGH": "Alta",
+    "MEDIUM": "Media",
+    "LOW": "Baja"
+  }
+}
