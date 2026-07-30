@@ -23,25 +23,32 @@ output:
 
 # --- RENAMING ------------------------------------------------
 renaming:
-  # File rename pattern. Placeholders:
-  #   {project} = project name (asked at runtime)
-  #   {theme}   = N2 sub-folder theme (e.g. "NDA", "Annual Financial Statements")
-  #   {subject} = short subject extracted from original filename
-  #   {date}    = YYYYMM extracted from filename or content (or "undated")
-  pattern: "{project} - {theme} - {subject} - {date}"
+  # File rename pattern. The theme/topic is never repeated here — the folder
+  # structure already carries it. Placeholders:
+  #   {project}  = project name (asked at runtime)
+  #   {title}    = short, content-derived title (~3-7 words, never the raw
+  #                original filename, never the N1/N2 folder name)
+  #   {yyyymmdd} = date extracted from the document's own content
+  #                (falls back to yyyymm / yyyy / no date if unknown)
+  pattern: "{project} - {title} - {yyyymmdd}"
 
-# --- PHASE 2 — CONTEXTUAL CHECKLIST --------------------------
+# --- CONTEXTUAL CHECKLIST -------------------------------------
+# The country/sector and "enriched checklist?" questions are asked upfront,
+# in the same single pass as everything else — not as a deferred phase.
 checklist:
-  # Auto-trigger Phase 2 (true) or always ask the user (false)
-  auto_run: false
-
-  # Default location used when the user doesn't specify
+  # Country used to pick the DD reference list (FR/CH). The reference lists
+  # themselves (data_sources/Listes DD - <Country>.xlsx) are firm-specific
+  # and are NOT bundled in this public repo — supply your own to enable the
+  # Top 50 missing-documents step; it is skipped gracefully otherwise.
   default_location: "France"
 
-  # Default sector — leave empty to detect from website scraping
+  # Default sector (tab in the DD reference list) — leave empty to ask/detect
   default_sector: ""
 
-  # External legal/fiscal data sources to consult (V2 — implemented as research prompts)
+  # Enriched checklist (website scraping + legal sources) is opt-in and
+  # always confirmed with the user first — it is the only step that leaves
+  # the machine (see SKILL.md, "Confidentialité & zéro exfiltration").
+  auto_run: false
   data_sources:
     - "data.gouv.fr"        # French public datasets
     # - "legifrance"         # French laws (V2)

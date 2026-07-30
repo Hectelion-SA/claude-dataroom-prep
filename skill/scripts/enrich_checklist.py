@@ -8,7 +8,7 @@ Génère un Excel "Liste documents à demander.xlsx" enrichi via :
 
 CLI:
     python enrich_checklist.py \
-        --dataroom "<path Project Acme>" \
+        --dataroom "<path Project Medicaps>" \
         --extracted-json "extracted.json" \
         --location "France" \
         --sector "MedTech" \

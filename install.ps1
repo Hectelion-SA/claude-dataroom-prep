@@ -40,14 +40,31 @@ if (-not $pyCmd) {
 $pyVersion = & python --version 2>&1
 Write-Host "  Found: $pyVersion ($($pyCmd.Source))" -ForegroundColor Green
 
-Write-Host "[2/5] Installing Python packages (pypdf, python-docx, openpyxl, pyyaml)..." -ForegroundColor Yellow
-& python -m pip install --quiet pypdf python-docx openpyxl pyyaml
+Write-Host "[2/5] Installing Python packages (pypdf, python-docx, openpyxl, pyyaml, pymupdf, pytesseract, pillow)..." -ForegroundColor Yellow
+& python -m pip install --quiet pypdf python-docx openpyxl pyyaml pymupdf pytesseract pillow
 if ($LASTEXITCODE -ne 0) {
     Write-Host "  ERROR: pip install failed." -ForegroundColor Red
-    Write-Host "  Run manually: python -m pip install pypdf python-docx openpyxl pyyaml"
+    Write-Host "  Run manually: python -m pip install pypdf python-docx openpyxl pyyaml pymupdf pytesseract pillow"
     exit 1
 }
 Write-Host "  All packages OK." -ForegroundColor Green
+
+# Tesseract OCR binary (scanned PDF fallback) — best-effort, non-fatal.
+# The skill also retries this automatically on every run if still missing
+# (see ensure_ocr_stack() in scripts/run_pipeline.py), so a failure here is not blocking.
+Write-Host "[2b/5] Checking Tesseract OCR (for scanned PDFs)..." -ForegroundColor Yellow
+if (Get-Command tesseract -ErrorAction SilentlyContinue) {
+    Write-Host "  Tesseract already installed." -ForegroundColor Green
+} elseif (Get-Command winget -ErrorAction SilentlyContinue) {
+    try {
+        winget install --id UB-Mannheim.TesseractOCR -e --silent --accept-package-agreements --accept-source-agreements
+        Write-Host "  Tesseract installed via winget." -ForegroundColor Green
+    } catch {
+        Write-Host "  Could not auto-install Tesseract now — the skill will retry automatically on first real run." -ForegroundColor Yellow
+    }
+} else {
+    Write-Host "  winget not found — the skill will retry automatically on first real run, or install manually: https://github.com/UB-Mannheim/tesseract" -ForegroundColor Yellow
+}
 
 # ============================================================
 # 3) Copy skill files into ~/.claude/skills/dataroom-prep/
@@ -150,7 +167,8 @@ output:
   make_zip: true
 
 renaming:
-  pattern: "{project} - {theme} - {subject} - {date}"
+  # Short, content-derived title (never the theme, never the raw filename) + yyyymmdd.
+  pattern: "{project} - {title} - {yyyymmdd}"
 
 checklist:
   auto_run: false
