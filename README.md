@@ -12,14 +12,15 @@ Every M&A advisor, lawyer, notary, banker or founder doing a deal runs the same 
 
 This **Claude Code skill** automates the entire loop:
 
-1. **Asks 5 short questions** — source folder, destination, project name, language for folders, language for Excel mapping
-2. **Extracts text** from every PDF/DOCX/XLSX/PPTX
-3. **Classifies** using parent_folder + filename heuristics into 11 standard DD folders × topical sub-folders
+1. **Asks every question upfront, in one single pass** — source folder, destination, project name, folder/Excel language, country + sector (for the DD checklist), and whether to also run the optional enriched checklist — never split across a first pass and a follow-up
+2. **Extracts text** from every PDF/DOCX/XLSX/PPTX, with automatic **OCR fallback for scanned PDFs** (PyMuPDF + Tesseract, installed by the skill itself on first run if missing — nothing to set up)
+3. **Classifies** using parent_folder + filename + content heuristics into 11 standard DD folders × topical sub-folders
 4. **Detects exact duplicates** via SHA-256 hashing → archives them separately
 5. **Detects obsolete versions** by clustering filename bases (v1/v2/final/signed/OneDrive copies) → archives only the obsolete ones, keeps the most recent
-6. **Renames** following the pattern `Project Name - Theme - Subject - YYYYMM.ext`
-7. **Generates an Excel mapping** (multilingual) showing Original → Renamed for every file, with dedup status and final path
-8. **Phase 2 (optional)** — builds a contextual checklist of documents to request from client, enriched by location (FR / CH / BE / LU / other) + sector + website scraping
+6. **Renames** with a short, content-derived title (never the raw filename, never the folder theme) following the pattern `Project Name - Short Title - yyyymmdd.ext`
+7. **Anonymizes automatically** — the target company's real name, brands, and affiliated entities never appear in filenames, the Excel, or the conversation
+8. **Generates an Excel report** (multilingual) showing Original → Renamed for every file, with dedup status, final path, and a Top-50-missing-documents tab (offline, from your firm's own DD reference lists — see [`skill/data_sources/README.md`](skill/data_sources/README.md))
+9. **Enriched checklist (optional, opt-in)** — the only step that reaches the internet: scrapes the company's public website + legal sources to refine the missing-documents checklist by location + sector
 
 **Built for**: M&A boutiques, investment banks, corporate lawyers, transactional notaries, accounting firms, family office advisors, solo dealmakers preparing the pre-VDR stage.
 
@@ -44,7 +45,7 @@ This **Claude Code skill** automates the entire loop:
 - Windows 10/11, macOS, or Linux
 - Python 3.9+ on `PATH` ([python.org](https://python.org))
 - Claude Code installed + active Anthropic plan
-- *(Optional)* Firecrawl MCP for Phase 2 website scraping
+- *(Optional)* Firecrawl MCP for the enriched checklist's website scraping step
 
 ### Manual install (without Claude Code prompt)
 
@@ -61,19 +62,25 @@ bash install.sh
 
 ## What you get
 
-### The conversation — 5 questions Phase 1 + 3 optional Phase 2
+### The conversation — every question asked upfront, in one pass
 
-| Phase | Question | Example answer |
-|---|---|---|
-| **1** | Where are your source documents? | `Z:\Projects\Acme M&A\Source docs` |
-| **1** | Where to create the dataroom? | `D:\Datarooms` |
-| **1** | Project name? | `Project Acme` |
-| **1** | Language for folder structure? | `en` (or `fr` / `de` / `it` / `es`) |
-| **1** | Language for Excel mapping? | `en` |
-| **2** | Generate enriched DD checklist? | Yes / No |
-| **2** | Company location? | `France` / `Switzerland` / `Belgium` / `Luxembourg` / other |
-| **2** | Company website URL? | `https://acme.com` (auto-scrapes for sector detection) |
-| **2** | Sector? | `MedTech` / `SaaS` / `Real Estate` / `Industrial` / ... (auto-detect from website if omitted) |
+No "come back later for more questions": everything below is asked together, before any file
+is touched, including the enriched-checklist sub-questions if you say yes to it.
+
+| Question | Example answer |
+|---|---|
+| Where are your source documents? | `Z:\Projects\Acme M&A\Source docs` |
+| Where to create the dataroom? | `D:\Datarooms` |
+| Project name? | `Project Acme` |
+| Language for folder structure? | `en` (or `fr` / `de` / `it` / `es`) |
+| Language for Excel report? | `en` |
+| Country (for the DD reference list)? | `France` / `Switzerland` |
+| Sector? | `MedTech` / `SaaS` / `Real Estate` / `Industrial` / ... |
+| Also run the optional enriched checklist? | Yes / No |
+| *(if Yes)* Company location? | `France` / `Switzerland` / `Belgium` / `Luxembourg` / other |
+| *(if Yes)* Company website URL? | `https://acme.com` (auto-scrapes for sector detection) |
+| *(if Yes)* Sector already known? | optional — auto-detected from the website if omitted |
+| *(if Yes)* Sources to consult? | data.gouv / Légifrance / Fedlex / OpenLaw / none |
 
 ### The output structure — 2-level folder tree (multilingual)
 
@@ -116,11 +123,11 @@ Project Acme/
 │   ├── 03_Legal/
 │   │   └── NDA & Confidentiality Agreements/
 │   └── ...
-├── _Mapping report.xlsx               ← see below
-└── _Documents to request.xlsx         ← Phase 2 only
+├── _Dataprep Report.xlsx              ← see below (always generated)
+└── _Liste documents à demander.xlsx   ← only if you opted into the enriched checklist
 ```
 
-### The Excel — `_Mapping report.xlsx` (5 tabs, multilingual headers)
+### The Excel — `_Dataprep Report.xlsx` (5 tabs, multilingual headers, always generated)
 
 **Tab 1 — Dashboard** — KPIs : docs processed, HIGH/LOW confidence split, duplicates archived, version clusters detected
 
@@ -134,11 +141,15 @@ Colored cells: confidence (green/orange/red), dedup status (green/orange/red).
 
 **Tab 3 — Structure** — Tree of the generated dataroom with doc count per N1/N2
 
-**Tab 4 — DD Checklist** — (only with Phase 2) — items present / to request, with criticality
+**Tab 4 — Duplicates & versions** — full audit trail of what was archived and why
 
-**Tab 5 — Duplicates & versions** — full audit trail of what was archived and why
+**Tab 5 — Documents à demander (Top 50)** — offline gap analysis against your firm's DD
+reference list for the chosen country/sector (see
+[`skill/data_sources/README.md`](skill/data_sources/README.md) — these lists are firm
+methodology and are not bundled in this public repo; without them, this tab is skipped and
+everything else still runs)
 
-### Phase 2 — `_Documents to request.xlsx` (enriched checklist)
+### Optional — `_Liste documents à demander.xlsx` (enriched checklist)
 
 The skill cross-references your dataroom against:
 
@@ -199,14 +210,27 @@ Equivalent manual work: **2-3 days of junior associate** at 600 CHF/day = **1500
 For batch processing (CI, automation):
 
 ```bash
+# 1. Extract only (produces extracted.json for content-based titling)
 python ~/.claude/skills/dataroom-prep/scripts/run_pipeline.py \
   --source "/path/to/messy/folder" \
   --destination "/path/to/output" \
   --project-name "Project Acme" \
+  --extract-only "/path/to/output/extracted.json"
+
+# 2. Build, with content-derived titles/classification (decisions.json), anonymization,
+#    and the offline Top-50 gap analysis for a given country/sector
+python ~/.claude/skills/dataroom-prep/scripts/run_pipeline.py \
+  --destination "/path/to/output" \
+  --project-name "Project Acme" \
   --folder-lang en \
   --excel-lang en \
+  --decisions-json "/path/to/output/decisions.json" \
+  --scrub-file "/path/to/scrub_names.txt" \
+  --country FR \
+  --sector "Tech" \
   --make-zip
 
+# 3. Optional — enriched checklist (website + legal sources, the only network step)
 python ~/.claude/skills/dataroom-prep/scripts/enrich_checklist.py \
   --dataroom "/path/to/output/Project Acme" \
   --extracted-json "/path/to/output/extracted.json" \
@@ -214,14 +238,24 @@ python ~/.claude/skills/dataroom-prep/scripts/enrich_checklist.py \
   --sector "MedTech"
 ```
 
+Scanned PDFs are OCR'd automatically (`ensure_ocr_stack()` installs `pytesseract` + Tesseract +
+French/English language data on first real run if missing — safe to run offline afterwards).
+
 ---
 
 ## Privacy & Security
 
-- 🔒 **Local processing only** — all extraction, classification, dedup happens on your machine
-- 🔒 **No third-party uploads** by default (Firecrawl only used if you opt-in for Phase 2 website scraping)
+- 🔒 **Local processing only** — extraction, classification, dedup, OCR, and the Top-50 gap
+  analysis all run 100% offline on your machine; no document content ever leaves it
+- 🔒 **No third-party uploads by default** — the only network call in the whole pipeline is
+  the opt-in enriched checklist (website + legal sources), and only the public URL and
+  sector/legal queries are sent — never document content, and always confirmed with you first
+- 🔒 **Automatic anonymization** — the target company's real name, brands, and affiliated
+  entities are detected from the extracted content and scrubbed from every generated
+  filename, folder, and Excel cell (case-insensitive, word-boundary matching) — on by default,
+  never asked as a question
 - 🔒 **GDPR-friendly architecture** — no persistent storage, files read but never sent externally
-- 🔒 **Audit trail** — every file movement documented in `_Mapping report.xlsx`
+- 🔒 **Audit trail** — every file movement documented in `_Dataprep Report.xlsx`
 - 🔒 **Original files untouched** — the skill copies, never moves or modifies source files
 
 ---

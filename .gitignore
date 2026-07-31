@@ -11,6 +11,11 @@ extracted.json
 logs/
 *.log
 
+# OCR language data — auto-downloaded by ensure_ocr_stack() on first run
+skill/tessdata/
+tessdata/
+*.traineddata
+
 # Python
 __pycache__/
 *.pyc

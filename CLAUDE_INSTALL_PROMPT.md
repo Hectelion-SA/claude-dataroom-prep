@@ -41,13 +41,13 @@ Voici ce que je voudrais que tu fasses pour moi, étape par étape :
    - Sinon : clone-le avec `git clone https://github.com/Hectelion-SA/claude-dataroom-prep.git ~/Github/dataroom-prep`
      (Windows : git clone ... %USERPROFILE%\Github\dataroom-prep)
 
-2. Installe les dépendances Python :
-   `python -m pip install --quiet pypdf python-docx openpyxl pyyaml`
+2. Installe les dépendances Python (dont `pymupdf` + `pytesseract` + `pillow` pour l'OCR
+   des PDF scannés — voir plus bas) :
+   `python -m pip install --quiet pypdf python-docx openpyxl pyyaml pymupdf pytesseract pillow`
 
 3. Lance le script d'installation interactif :
    - Windows (PowerShell) : `& "$env:USERPROFILE\Github\dataroom-prep\install.ps1"`
-   - macOS/Linux : `bash ~/Github/dataroom-prep/install.sh` (voir README si install.sh
-     pas disponible : copie manuelle suffit)
+   - macOS/Linux : `bash ~/Github/dataroom-prep/install.sh`
 
 4. Le script va te poser 5 questions de config :
    - Dossier de sauvegarde par défaut des datarooms
@@ -106,20 +106,23 @@ Dans **n'importe quel projet Claude Code**, tape :
 /dataroom-prep
 ```
 
-Le skill va te poser 5 questions :
+Le skill pose **toutes ses questions en une seule passe**, dès le départ (jamais découpé en
+« Phase 1 / Phase 2 ») :
 
 1. **Où sont tes documents source ?** (chemin ou ZIP)
 2. **Où veux-tu créer la dataroom ?** (chemin destination)
 3. **Nom du projet ?** (ex: "Project Acme")
 4. **Langue de la structure de dossiers ?** (fr/en/de/it/es)
 5. **Langue de l'Excel mapping ?** (fr/en/de/it/es)
+6. **Provenance de la documentation (pays) ?** (France/Suisse — choisit la liste DD de référence)
+7. **Secteur d'activité ?** (onglet de la liste DD)
+8. **Veux-tu aussi la checklist enrichie des documents à demander au client ?** (Oui/Non — si
+   oui, enchaîne immédiatement localisation, site web, secteur connu, sources à consulter)
 
-Puis il propose **Phase 2** (optionnelle) — checklist enrichie des documents
-à demander au client, basée sur :
-
-- Localisation société (France/Suisse/Belgique/Luxembourg/...)
-- Site web société (scraping automatique pour détecter secteur + conformités)
-- Secteur d'activité (MedTech/SaaS/Immobilier/Industriel/...)
+L'anonymisation (nom réel de la société cible + marques/filiales) est **toujours active**,
+sans confirmation à demander : aucune de ces informations ne doit apparaître dans les fichiers,
+l'Excel, ou la conversation. Les PDF scannés sont lus par OCR automatiquement (le skill installe
+lui-même `pytesseract` + Tesseract au premier lancement réel si absents — rien à faire).
 
 Livrables finaux dans le dossier destination :
 
@@ -143,8 +146,8 @@ Livrables finaux dans le dossier destination :
 ├── 11_<To Sort>/
 ├── _98_<Exact Duplicates>/        ← doublons SHA-256 archivés
 ├── _99_<Old Versions>/             ← versions obsolètes archivées
-├── _Mapping report.xlsx            ← Excel mapping (Original → Renommé)
-└── _Documents to request.xlsx      ← checklist DD enrichie (si Phase 2)
+└── _Dataprep Report.xlsx           ← Dashboard + Mapping + Structure + Doublons/versions
+                                      + Documents à demander (Top 50, si pays/secteur fournis)
 ```
 
 Plus le ZIP final si activé dans la config.
